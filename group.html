@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Group Project | Homepage</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="group.css">
+    </head>
+    <body class = "container">
+        <h1 class = "head">Spotify Statistics <img src = 'Spotify_Primary_Logo_RGB_White.png'></h1>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#home">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#data-clean">Data Clean</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#stats">Main Stats</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#charts">Chart</a></li>
+                                <li><a class="dropdown-item" href="#team">Team</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <main>
+            <header id="home">
+                <div class = "text-box">
+                    <h1><b>Description</b></h1>
+                    <p>The dataset contains a list of songs popular on Spotify in 2023. It has approximately 954 rows and 24 columns. 
+                    The dataset has qualitative data and quantitative data namely:  
+
+                    track_name, artist(s)name, artist_count, released_year, released_month, 
+                    released_day, in_spotify_playlists, in_spotify_charts, streams, in_apple_playlists, 
+                    in_apple_charts, in_deezer_playlists, in_deezer_charts, in_shazam_charts, bpm, key, mode, 
+                    danceability%, valence_%, energy_%, acousticness_%, instrumentalness_%, liveness_% and speechiness_%. </p>
+                </div>
+            </header>
+            <br>
+            <div class="border">
+                <h2 id="data-clean" class = "data"><b>Data Cleaning Summary</b><img src = 'exel_logo-removebg-preview.png'></h2>
+                <p>Excel was used to clean the dataset by importing it, finding and removing duplicates where necessary, 
+                    taking care of Missing Values, Converting Data Types, and Finding and Removing confusing Characters in text.</p>
+            </div>
+            <br>
+                <h2 class = "data" id = "stats"><b>Main Statistics</b></h2>
+                <p>For the descriptive statistics the data’s mean, mode, median, min, max and the standard deviation for the columns stream, 
+                    BPM, Apple charts, Apple playlists, sportify playlists, and the Spotify chats, as shown below.</p>
+                <img src ="Table.png" class = "table"><br>
+                <li>The streams column has the largest numerical data with a mean above the median and mode, with a range of 3703892312 and a standard deviation higher than the mean.</li><br>
+                <li>The BPM column has a mean slightly higher than the median and the mode and has a range of 141 and the standard deviation is lower than the lower range of the dataset.</li><br>
+                <li>In terms of charting, for both the Apple chart and the Spotify charts they both have a min range of 0. Apple has a wider range of 275 whilst Spotify has a range of 147. 
+                    The data in the apple charts is bigger than that the Spotify in terms of the mean, median, max and the standard deviation.</li><br>
+                <li>In terms of playlists, Spotify playlist is bigger than that the Apple playlist in terms of the mean, median, max, min and the standard deviation and mode. 
+                    Spotify also has a wider range of 52867 whilst the Apple has a range of 672.</li><br>
+            <br>
+                <img src = "Table2.png" class = "table2"><br>
+            
+            <br>
+            <section id="charts">
+                <h2><b>Chart</b></h2>
+                <canvas id ="chart" aria-label = "Demo chart"></canvas>
+                <P>
+                    <button id ="streamsMonth" type="button" class="btn btn-success">Streams by Month</button>
+                    <button id = "bpmEnergy" type="button" class="btn btn-success">BPM Vs Enegry</button>
+                    <button id = "streamsYear" type="button" class="btn btn-success">Streams by Year</button>
+                </P>
+                <section></section>
+            </section>
+            <br>
+            <article class = "bg-success-subtle rounded">
+                <h2>Instructions</h2>
+                <p>To Display A Chart of your choosing, click on the bottons present</p>
+            </article>
+        </main>
+    </body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+    <script src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+    let myChart;
+
+    fetch('spotify dataset CA2(in).csv')
+        .then(response => response.text())
+        .then(csvText => {
+
+            const parsed = Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true
+            });
+
+            const data = parsed.data;
+            const ctx = document.getElementById('chart');
+
+            function createChart(labels, values, labelName, chartType) {
+
+                if (myChart) {
+                    myChart.destroy();
+                }
+
+                myChart = new Chart(ctx, {
+                    type: chartType,
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: labelName,
+                            data: values,
+                            fill: chartType === 'line'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            const monthLabels = data.map(row => row.released_month);
+            const streamValues = data.map(row => Number(row.streams));
+
+            const energyValues = data.map(row => row.energy_perc);
+            const bpmValues = data.map(row => Number(row.bpm));
+
+            // Default chart
+            createChart(monthLabels, streamValues, "Streams by Month", "bar");
+
+            document.getElementById("streamsMonth").addEventListener("click", () => {
+                createChart(monthLabels, streamValues, "Streams by Month", "bar");
+            });
+
+            document.getElementById("bpmEnergy").addEventListener("click", () => {
+
+                const scatterData = data.map(row => ({
+                    x: Number(row.bpm),
+                    y: Number(row.energy_perc)
+                }));
+
+                if (myChart) myChart.destroy();
+
+                myChart = new Chart(ctx, {
+                    type: "scatter",
+                    data: {
+                        datasets: [{
+                            label: "BPM vs Energy",
+                            data: scatterData
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: { title: { display: true, text: "BPM" }},
+                            y: { title: { display: true, text: "Energy %" }}
+                        }
+                    }
+                });
+            });
+
+            document.getElementById("streamsYear").addEventListener("click", () => {
+                const yearLabels = data.map(row => row.released_year);
+                const yearStreams = data.map(row => Number(row.streams));
+                createChart(yearLabels, yearStreams, "Streams by Year", "line");
+            });
+
+        })
+        .catch(error => console.error('Error loading CSV:', error));
+    </script>
+    <br>
+    <h2>Basic machine Learning</h2>
+    <p>The machine leaning part was done in python to train the model to make predictions for the number of steams given the number of playlists a singer has with regards to the actual song.  As shown in the diagram below:</p>
+    <img src = "Machine Learning.png" class = "machine">
+    <br>
+    <p>The model shows that the Total Streams increase steadily with the Number of Spotify Playlists.</p>
+    <br>
+    <h2><b>Limitations and Ethics</b></h2>
+    <li><b>Bias:</b>  this can be categorized in terms of the creator’s taste in music and their age range. Secondly, 
+        there is algorithmic bias, created by the system recommendations resulting in the push of certain music and particular music artists. 
+        Lastly there is representation bias, caused by the interaction between the system and some users like subscribers, age range and geography.</li><br>
+    <li><b>Privacy:</b> this can be caused by the machine learning data analysis, and unauthorised analysis can cause data breaches </li><br>
+    <li><b>Intellectual Property & Scraping:</b> there is a chance that other artists and songs are not included in the dataset due to the terms and conditions associated with their music.</li>
+    <br>
+    <h2 class="data"><b>Conclusion</b></h2>
+    <p>This dataset was collected from the Spotify Songs 2023, and it shows music streamed across platforms like Spotify and Apple jus to mention the data. 
+        It was downloaded as a csv file, imported into excel file and checked for errors like duplicates, blank spaces and unnecessary characters.<br><br> 
+    The statistics like mean, mode max, min, median and standard deviation were calculated to analyse numerical data like streams, chats and playlists. 
+    Charts and graphs like the column, bar graph and line graph were used to analyse the relationships between the columns of data.<br><br>
+    Collecting data is a good as it brings light to certain information. However, there are some ethical issues and limitations that occur like numerous biases, 
+    privacy issues and legal restrictions. Keeping that in mind it is important to collect a wide range of data considering the ethical concerns.</p>
+    <footer id="team">
+        <label>Brandon: Lead Web Developer</label><br>
+        <label>Atalanta: Lead Researcher</label><br>
+        <label>Zack: Machine Learning Researcher</label><br>
+        <label>Ocean: Dataset Researcher</label>
+    </footer>
+</html>
